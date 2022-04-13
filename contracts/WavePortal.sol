@@ -7,6 +7,7 @@ import "hardhat/console.sol";
 contract WavePortal{
     //totalWaves is a state variable => stored permanently in contract storage
     uint256 totalWaves;
+    address[] data;
 
     constructor() {
         console.log("Yo yo, I'm a contract and I am smart");
@@ -17,6 +18,12 @@ contract WavePortal{
     function wave() public {
         totalWaves +=1;
         console.log("%s has waved!", msg.sender);
+        data.push(msg.sender);
+    }
+
+    function peopleWhoWaved() public view returns (address[] memory) {
+        console.log("\n List of addresses that waved : ");
+        return data;
     }
 
     function getTotalWaves() public view returns (uint256) {
