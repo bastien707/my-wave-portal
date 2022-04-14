@@ -7,3 +7,8 @@ typechain
 #Hardhat files
 cache
 artifacts
+hardhat.config.js
+
+# text file
+
+WavePortalAddress.txt
