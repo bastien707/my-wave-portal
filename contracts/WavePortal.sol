@@ -7,23 +7,40 @@ import "hardhat/console.sol";
 contract WavePortal{
     //totalWaves is a state variable => stored permanently in contract storage
     uint256 totalWaves;
-    address[] data;
+
+    event NewWave(
+        address indexed from, 
+        uint256 timestamp, 
+        string message
+    );
+
+    struct Wave{
+        address waver;
+        string message;
+        uint timestamp;
+    }
+
+    // array of Wave structure
+    Wave[] waves;
 
     constructor() {
-        console.log("Yo yo, I'm a contract and I am smart");
+        console.log("I'm a smart contract");
     }
 
     //we know who is msg.sender because in order to call a smart contract you 
     //need to be connected to a wallet
-    function wave() public {
+    //require _message which is the message our user sends us from the frontend
+    function wave(string memory _message) public {
         totalWaves +=1;
-        console.log("%s has waved!", msg.sender);
-        data.push(msg.sender);
+        console.log("%s waved! w/ message %s", msg.sender, _message);
+
+        waves.push(Wave(msg.sender, _message, block.timestamp));
+
+        emit NewWave(msg.sender, block.timestamp, _message);
     }
 
-    function peopleWhoWaved() public view returns (address[] memory) {
-        console.log("\n List of addresses that waved : ");
-        return data;
+    function getAllWaves() public view returns (Wave[] memory){
+        return waves;
     }
 
     function getTotalWaves() public view returns (uint256) {

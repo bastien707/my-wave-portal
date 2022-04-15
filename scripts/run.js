@@ -1,6 +1,4 @@
 const main = async () => {
-    //we need owner wallet addresses and a random one
-    const [owner, randomPerson] = await hre.ethers.getSigners();
     //this will compile the contract
     //hre is an object containing all the functionality that hardhat expose => no need to import
     const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
@@ -12,23 +10,22 @@ const main = async () => {
     await waveContract.deployed();
 
     console.log("Contract deployed to: ", waveContract.address);
-    console.log("Contract deployed by: ", owner.address);
 
     let waveCount = await waveContract.getTotalWaves();
-    let storePeopleWave = [];
-    //self wave
-    let waveTxn = await waveContract.wave();
-    await waveTxn.wait();
+   
+    let waveTxn = await waveContract.wave("A message!");
+    await waveTxn.wait(); // Wait for tx to be mined
 
-    waveTxn =  await waveContract.connect(randomPerson).wave();
-    await waveTxn.wait();
+    //we need owner wallet addresses and a random one
+    const [_, randomPerson] = await hre.ethers.getSigners();
+    waveTxn = await waveContract.connect(randomPerson).wave("Another message!");
+    await waveTxn.wait(); // Wait for the transaction to be mined
 
-    // check if total wave count change
+    let allWaves = await waveContract.getAllWaves();
+    console.log(allWaves);
+
     waveCount = await waveContract.getTotalWaves();
 
-    let people = await waveContract.peopleWhoWaved();
-    
-    console.log(people);
 };
 
 const runMain = async () => {
