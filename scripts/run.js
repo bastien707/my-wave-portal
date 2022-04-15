@@ -3,18 +3,39 @@ const main = async () => {
     //hre is an object containing all the functionality that hardhat expose => no need to import
     const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
     
-    //create local Ethereum network
-    const waveContract = await waveContractFactory.deploy();
+    //create local Ethereum network and giving 0.1 ether to the contract
+    const waveContract = await waveContractFactory.deploy({
+        value: hre.ethers.utils.parseEther("0.1"),
+    });
     
     //wait until contract is officially deployed
     await waveContract.deployed();
 
     console.log("Contract deployed to: ", waveContract.address);
 
-    let waveCount = await waveContract.getTotalWaves();
+    //get contract balance
+    let contractBalance = await hre.ethers.provider.getBalance(
+        waveContract.address
+    );
+    console.log(
+        "Contract balance: ", 
+        hre.ethers.utils.formatEther(contractBalance)
+    );
    
+    /**
+     * Send a wave
+     */
     let waveTxn = await waveContract.wave("A message!");
     await waveTxn.wait(); // Wait for tx to be mined
+
+    /**
+     * check contract balance after wave
+     */
+    contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
+    console.log(
+        "Contract balance: ", 
+        hre.ethers.utils.formatEther(contractBalance)
+    );
 
     //we need owner wallet addresses and a random one
     const [_, randomPerson] = await hre.ethers.getSigners();
